@@ -7,7 +7,7 @@ interface CardProps {
 }
 
 const Card = ({ Icon, title, value }: CardProps) => (
-    <div className="p-4 w-full bg-white border border-gray-200 md:rounded-md flex items-center justify-between">
+    <div className="p-4 w-[100%] bg-white border border-gray-200 md:rounded-md flex items-center justify-between">
         <span className="flex items-center gap-2">
             <Icon className="text-gray-700" />
             {title}:

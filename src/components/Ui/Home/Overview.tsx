@@ -1,3 +1,4 @@
+import Loading from "@/components/Shared/Loading/Loading";
 import { useGetOverviewQuery } from "@/lib/store/api/slices/expenseSlice";
 import {
     BanknoteArrowDown,
@@ -10,7 +11,7 @@ const Overview = () => {
     const { data: overview, isLoading } = useGetOverviewQuery();
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     return (
