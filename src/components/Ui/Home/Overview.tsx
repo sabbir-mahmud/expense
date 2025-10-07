@@ -4,6 +4,7 @@ import {
     BanknoteArrowUp,
     WalletMinimal,
 } from "lucide-react";
+import Card from "./Card";
 
 const Overview = () => {
     const { data: overview, isLoading } = useGetOverviewQuery();
@@ -13,19 +14,22 @@ const Overview = () => {
     }
 
     return (
-        <div className="flex gap-3 mt-1 justify-between items-center hover:cursor-pointer">
-            <div className="p-4 w-full bg-white border border-gray-200 rounded-md flex items-center">
-                <WalletMinimal className="mr-2" />
-                Balance: {overview?.data?.balance}
-            </div>
-            <div className="p-4 w-full bg-white border border-gray-200 rounded-md flex items-center">
-                <BanknoteArrowUp className="mr-2" />
-                Savings: {overview?.data?.saving}
-            </div>
-            <div className="p-4 w-full bg-white border border-gray-200 rounded-md flex items-center">
-                <BanknoteArrowDown className="mr-2" />
-                Expense: {overview?.data?.thisMonthExpense}
-            </div>
+        <div className="flex flex-col md:flex-row gap-0 md:gap-3 mt-1 justify-between items-center hover:cursor-pointer">
+            <Card
+                Icon={WalletMinimal}
+                title={"Balance"}
+                value={overview?.data?.balance}
+            />
+            <Card
+                Icon={BanknoteArrowUp}
+                title={"Savings"}
+                value={overview?.data?.saving}
+            />
+            <Card
+                Icon={BanknoteArrowDown}
+                title={"Expense"}
+                value={overview?.data?.thisMonthExpense}
+            />
         </div>
     );
 };

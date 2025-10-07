@@ -4,7 +4,7 @@ import { ChevronDown, Plus } from "lucide-react";
 
 const Navbar = () => {
     return (
-        <div className="bg-gray-900 text-white p-3 mt-0.5 rounded-md flex items-center justify-between">
+        <div className="bg-gray-900 text-white p-3 mt-0.5 md:rounded-md flex items-center justify-between">
             <div className="text-lg font-semibold tracking-wide">
                 Sabbir Mahmud
             </div>
