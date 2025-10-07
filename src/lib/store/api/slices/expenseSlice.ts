@@ -1,8 +1,9 @@
+import { OverviewResponse } from "@/types/overview";
 import { apiSlice } from "../apiSlice";
 
 const expenseSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getOverview: builder.query<any, void>({
+        getOverview: builder.query<OverviewResponse, void>({
             query: () => ({
                 url: "api/v1/expense/overview",
                 method: "GET",
