@@ -1,27 +1,44 @@
 "use client";
 
+import { useLoginMutation } from "@/lib/store/api/slices/authSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { userLogin } from "@/lib/store/slices/auth/tokenSlice";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [message, setMessage] = useState({ type: "", message: "" });
+    const dispatch = useAppDispatch();
+    const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const [login, { isLoading }] = useLoginMutation();
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log({ email, password });
-        // TODO: Add login API call here
+        const res = await login({ email, password });
+        if (res?.data) {
+            setMessage({ type: "success", message: "Login successful" });
+            const token = res?.data?.data?.token;
+            dispatch(userLogin(token));
+            router.push("/");
+        } else {
+            setMessage({
+                type: "error",
+                message: "Login failed! Check your credentials",
+            });
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
             <div className="max-w-md w-full bg-white shadow-2xl rounded-xl p-10 space-y-6 relative overflow-hidden">
-                {/* Background subtle illustration */}
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('/background-pattern.svg')] bg-cover bg-center opacity-10 pointer-events-none"></div>
 
-                {/* Header */}
                 <h1 className="text-4xl font-bold text-gray-800 text-center z-10 relative">
                     Expense Manager
                 </h1>
@@ -29,12 +46,21 @@ const Login = () => {
                     Manage your expenses effortlessly
                 </p>
 
-                {/* Form */}
+                {message.message && (
+                    <p
+                        className={`${
+                            message.type === "success"
+                                ? "text-green-500"
+                                : "text-red-500"
+                        } text-center z-10 relative`}
+                    >
+                        {message.message}
+                    </p>
+                )}
                 <form
                     onSubmit={handleLogin}
                     className="space-y-5 z-10 relative"
                 >
-                    {/* Email Input */}
                     <div className="relative">
                         <Mail
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -50,7 +76,6 @@ const Login = () => {
                         />
                     </div>
 
-                    {/* Password Input */}
                     <div className="relative">
                         <Lock
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -77,7 +102,6 @@ const Login = () => {
                         </button>
                     </div>
 
-                    {/* Forgot Password */}
                     <div className="text-right text-sm text-gray-500">
                         <a
                             href="/auth/forgot-password"
@@ -87,16 +111,15 @@ const Login = () => {
                         </a>
                     </div>
 
-                    {/* Login Button */}
                     <button
                         type="submit"
+                        disabled={isLoading}
                         className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition font-medium hover:cursor-pointer"
                     >
-                        Login
+                        {isLoading ? "logging in..." : "Login"}
                     </button>
                 </form>
 
-                {/* Register Link */}
                 <div className="text-center text-gray-500 text-sm z-10 relative">
                     Don&apos;t have an account?{" "}
                     <Link
