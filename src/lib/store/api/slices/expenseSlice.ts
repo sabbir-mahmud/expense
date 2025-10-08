@@ -1,3 +1,4 @@
+import { ExpenseResponse } from "@/types/expense";
 import { OverviewResponse } from "@/types/overview";
 import { apiSlice } from "../apiSlice";
 
@@ -10,7 +11,14 @@ const expenseSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["expense"],
         }),
+        getExpenses: builder.query<ExpenseResponse, { page: number }>({
+            query: ({ page }) => ({
+                url: `api/v1/expense?page=${page}`,
+                method: "GET",
+            }),
+            providesTags: ["expense"],
+        }),
     }),
 });
 
-export const { useGetOverviewQuery } = expenseSlice;
+export const { useGetOverviewQuery, useGetExpensesQuery } = expenseSlice;

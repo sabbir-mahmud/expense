@@ -3,6 +3,7 @@ import { Auth } from "@/components/Auth/Auth";
 import Navbar from "@/components/Shared/Navbar/Navbar";
 import Charts from "./Charts";
 import Overview from "./Overview";
+import Transactions from "./Transactions";
 
 const Home = () => {
     return (
@@ -10,6 +11,7 @@ const Home = () => {
             <Navbar />
             <Overview />
             <Charts />
+            <Transactions />
         </div>
     );
 };
