@@ -4,7 +4,9 @@ import {
     ArrowDownCircle,
     ArrowUpCircle,
     Calendar,
+    FileSliders,
     Tag,
+    Trash,
     Wallet,
 } from "lucide-react";
 import { useState } from "react";
@@ -23,20 +25,18 @@ const Transactions = () => {
 
     return (
         <div className="p-6 bg-white rounded-md mt-3 shadow-sm border border-gray-100">
-            {/* Header */}
             <div className="flex justify-between items-center mb-5">
                 <h2 className="text-xl font-semibold text-gray-800">
-                    Recent Transactions
+                    Transactions
                 </h2>
                 <button
                     onClick={() => alert("Add Transaction")}
-                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-full hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
+                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
                 >
                     +
                 </button>
             </div>
 
-            {/* States */}
             {isLoading ? (
                 <div className="text-center text-gray-500 py-10">
                     Loading...
@@ -71,6 +71,9 @@ const Transactions = () => {
                                 </th>
                                 <th className="py-3 px-4 text-left w-32">
                                     Category
+                                </th>
+                                <th className="py-3 px-4 text-left w-32">
+                                    Actions
                                 </th>
                             </tr>
                         </thead>
@@ -139,6 +142,26 @@ const Transactions = () => {
                                             <span className="flex items-center gap-2">
                                                 <Tag className="w-4 h-4 text-gray-400" />
                                                 {category}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 px-4 whitespace-nowrap">
+                                            <span className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        alert("Add Transaction")
+                                                    }
+                                                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
+                                                >
+                                                    <FileSliders className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        alert("Add Transaction")
+                                                    }
+                                                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
+                                                >
+                                                    <Trash className="w-4 h-4" />
+                                                </button>
                                             </span>
                                         </td>
                                     </tr>
