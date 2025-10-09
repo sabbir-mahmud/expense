@@ -4,15 +4,18 @@ import BaseModal from "@/components/Modals/BaseModal";
 import {
     useCreateExpenseMutation,
     useGetCategoriesQuery,
+    useUpdateExpenseMutation,
 } from "@/lib/store/api/slices/expenseSlice";
-import { Category } from "@/types/expense";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import { Category, Expense } from "@/types/expense";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Message } from "./Transactions";
 
 interface ExpenseFormProps {
     open: boolean;
     onClose: () => void;
+    message?: Message;
     setMessage: React.Dispatch<React.SetStateAction<Message>>;
+    tx?: Expense;
 }
 
 interface ExpenseFormData {
@@ -26,7 +29,9 @@ interface ExpenseFormData {
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
     open,
     onClose,
+    message,
     setMessage,
+    tx,
 }) => {
     const { data: categories, isLoading: categoriesLoading } =
         useGetCategoriesQuery();
@@ -39,6 +44,19 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     });
 
     const [create, { isLoading: isCreating }] = useCreateExpenseMutation();
+    const [update, { isLoading: isUpdating }] = useUpdateExpenseMutation();
+
+    useEffect(() => {
+        if (tx) {
+            setInitData({
+                type: tx.type as "expense" | "earn" | "saving",
+                amount: tx.amount.toString(),
+                category: tx.category?._id || "",
+                from: tx.from,
+                details: tx.details,
+            });
+        }
+    }, [tx]);
 
     const time = new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -64,12 +82,24 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         if (initData.type !== "expense") {
             delete initData.category;
         }
-        await create(initData);
-        setMessage({
-            type: "success",
-            message: "Transaction added successfully",
-        });
-        onClose();
+        let res = null;
+        if (tx) {
+            res = await update({ id: tx._id, data: initData });
+        } else {
+            res = await create(initData);
+        }
+        if (res?.data) {
+            setMessage({
+                type: "success",
+                message: "Transaction added successfully",
+            });
+            onClose();
+        } else {
+            setMessage({
+                type: "error",
+                message: "Transaction failed",
+            });
+        }
     };
 
     return (
@@ -199,6 +229,23 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
                         />
                     </div>
 
+                    <div>
+                        {message?.type === "success" && (
+                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-3">
+                                <span className="block sm:inline">
+                                    {message?.message}
+                                </span>
+                            </div>
+                        )}
+                        {message?.type === "error" && (
+                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-3">
+                                <span className="block sm:inline">
+                                    {message.message}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="flex justify-end gap-3 pt-4">
                         <button
                             type="button"
@@ -208,11 +255,11 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
                             Cancel
                         </button>
                         <button
-                            disabled={isCreating}
+                            disabled={isCreating || isUpdating}
                             type="submit"
                             className="px-5 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition hover:cursor-pointer"
                         >
-                            {isCreating ? "Saving..." : "Save"}
+                            {isCreating || isUpdating ? "Saving..." : "Save"}
                         </button>
                     </div>
                 </form>

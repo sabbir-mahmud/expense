@@ -33,6 +33,14 @@ const expenseSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["expense"],
         }),
+        updateExpense: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `api/v1/expense/${id}`,
+                method: "PATCH",
+                body: data,
+            }),
+            invalidatesTags: ["expense"],
+        }),
         deleteExpense: builder.mutation({
             query: (id) => ({
                 url: `api/v1/expense/${id}`,
@@ -48,5 +56,6 @@ export const {
     useGetCategoriesQuery,
     useGetExpensesQuery,
     useCreateExpenseMutation,
+    useUpdateExpenseMutation,
     useDeleteExpenseMutation,
 } = expenseSlice;

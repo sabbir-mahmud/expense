@@ -11,13 +11,22 @@ import {
     Wallet,
 } from "lucide-react";
 import React, { useState } from "react";
+import ExpenseForm from "./ExpenseForm";
 import { Message } from "./Transactions";
 
-const Transaction: React.FC<{
+interface TransactionProps {
     tx: Expense;
+    message: Message;
     setMessage: React.Dispatch<React.SetStateAction<Message>>;
-}> = ({ tx, setMessage }) => {
+}
+
+const Transaction: React.FC<TransactionProps> = ({
+    tx,
+    message,
+    setMessage,
+}) => {
     const [deleteModal, setDeleteModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
     const [deleteExpense, { isLoading: isDeleting }] =
         useDeleteExpenseMutation();
     const isExpense = tx.type === "expense";
@@ -86,7 +95,7 @@ const Transaction: React.FC<{
                 <td className="py-3 px-4 whitespace-nowrap">
                     <span className="flex items-center gap-2">
                         <button
-                            onClick={() => alert("Add Transaction")}
+                            onClick={() => setEditModal(true)}
                             className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
                         >
                             <FileSliders className="w-4 h-4" />
@@ -100,6 +109,16 @@ const Transaction: React.FC<{
                     </span>
                 </td>
             </tr>
+
+            {editModal && (
+                <ExpenseForm
+                    open={editModal}
+                    onClose={() => setEditModal(false)}
+                    tx={tx}
+                    message={message}
+                    setMessage={setMessage}
+                />
+            )}
 
             {deleteModal && (
                 <ConfirmModal

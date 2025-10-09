@@ -16,7 +16,7 @@ const tokenSlice = createSlice({
     initialState,
     reducers: {
         userLogin: (state, action) => {
-            Cookies.set("token", action.payload);
+            Cookies.set("token", action.payload, { expires: 30 });
             state.token = action.payload;
         },
         userLogout: (state) => {

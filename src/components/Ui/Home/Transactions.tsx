@@ -108,6 +108,7 @@ const Transactions = () => {
                                     <Transaction
                                         key={tx._id}
                                         tx={tx}
+                                        message={message}
                                         setMessage={setMessage}
                                     />
                                 ))}
@@ -145,6 +146,7 @@ const Transactions = () => {
                 <ExpenseForm
                     open={createModal}
                     onClose={() => setCreateModal(false)}
+                    message={message}
                     setMessage={setMessage}
                 />
             )}
