@@ -1,6 +1,12 @@
-interface Category {
+export interface Category {
     _id: string;
     name: string;
+}
+
+export interface CategoryResponse {
+    success: boolean;
+    message: string;
+    data: { categories: Category[] };
 }
 
 export interface Expense {

@@ -1,4 +1,4 @@
-import { ExpenseResponse } from "@/types/expense";
+import { CategoryResponse, ExpenseResponse } from "@/types/expense";
 import { OverviewResponse } from "@/types/overview";
 import { apiSlice } from "../apiSlice";
 
@@ -11,12 +11,27 @@ const expenseSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["expense"],
         }),
+        getCategories: builder.query<CategoryResponse, void>({
+            query: () => ({
+                url: "api/v1/expense/categories",
+                method: "GET",
+            }),
+            providesTags: ["expense"],
+        }),
         getExpenses: builder.query<ExpenseResponse, { page: number }>({
             query: ({ page }) => ({
                 url: `api/v1/expense?page=${page}`,
                 method: "GET",
             }),
             providesTags: ["expense"],
+        }),
+        createExpense: builder.mutation({
+            query: (data) => ({
+                url: "api/v1/expense",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["expense"],
         }),
         deleteExpense: builder.mutation({
             query: (id) => ({
@@ -30,6 +45,8 @@ const expenseSlice = apiSlice.injectEndpoints({
 
 export const {
     useGetOverviewQuery,
+    useGetCategoriesQuery,
     useGetExpensesQuery,
+    useCreateExpenseMutation,
     useDeleteExpenseMutation,
 } = expenseSlice;
