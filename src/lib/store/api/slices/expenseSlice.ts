@@ -18,7 +18,18 @@ const expenseSlice = apiSlice.injectEndpoints({
             }),
             providesTags: ["expense"],
         }),
+        deleteExpense: builder.mutation({
+            query: (id) => ({
+                url: `api/v1/expense/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["expense"],
+        }),
     }),
 });
 
-export const { useGetOverviewQuery, useGetExpensesQuery } = expenseSlice;
+export const {
+    useGetOverviewQuery,
+    useGetExpensesQuery,
+    useDeleteExpenseMutation,
+} = expenseSlice;

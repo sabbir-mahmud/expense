@@ -1,23 +1,29 @@
 import { useGetExpensesQuery } from "@/lib/store/api/slices/expenseSlice";
 import { Expense, ExpenseResponse } from "@/types/expense";
-import {
-    ArrowDownCircle,
-    ArrowUpCircle,
-    Calendar,
-    FileSliders,
-    Tag,
-    Trash,
-    Wallet,
-} from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Transaction from "./Transaction";
+
+export interface Message {
+    type: string;
+    message: string;
+}
 
 const Transactions = () => {
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState<number>(1);
+    const [message, setMessage] = useState<Message>({ type: "", message: "" });
     const { data, isLoading, isError } = useGetExpensesQuery({ page }) as {
         data: ExpenseResponse;
         isLoading: boolean;
         isError: boolean;
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMessage({ type: "", message: "" });
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [message]);
 
     const expenses = data?.data?.expenses || [];
     const pagination = data?.data?.pagination || {};
@@ -35,6 +41,23 @@ const Transactions = () => {
                 >
                     +
                 </button>
+            </div>
+
+            <div>
+                {message.type === "success" && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-3">
+                        <span className="block sm:inline">
+                            {message.message}
+                        </span>
+                    </div>
+                )}
+                {message.type === "error" && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-3">
+                        <span className="block sm:inline">
+                            {message.message}
+                        </span>
+                    </div>
+                )}
             </div>
 
             {isLoading ? (
@@ -78,95 +101,13 @@ const Transactions = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {expenses.map((tx: Expense) => {
-                                const isExpense = tx.type === "expense";
-                                const category =
-                                    tx.category?.name || "Uncategorized";
-                                const date = tx.createdAt
-                                    ? new Date(
-                                          tx.createdAt
-                                      ).toLocaleDateString()
-                                    : "-";
-
-                                return (
-                                    <tr
-                                        key={tx._id}
-                                        className="hover:bg-gray-50 transition duration-150"
-                                    >
-                                        {/* Date */}
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <span className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-gray-400" />
-                                                {date}
-                                            </span>
-                                        </td>
-
-                                        {/* Details */}
-                                        <td className="py-3 px-4 truncate max-w-[180px]">
-                                            {tx.details || "No details"}
-                                        </td>
-
-                                        {/* Amount */}
-                                        <td
-                                            className={`py-3 px-4 font-semibold whitespace-nowrap ${
-                                                isExpense
-                                                    ? "text-red-500"
-                                                    : "text-green-600"
-                                            }`}
-                                        >
-                                            {isExpense ? "-" : "+"}${tx.amount}
-                                        </td>
-
-                                        {/* Type */}
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <span className="flex items-center gap-2 capitalize">
-                                                {isExpense ? (
-                                                    <ArrowDownCircle className="w-4 h-4 text-red-500" />
-                                                ) : (
-                                                    <ArrowUpCircle className="w-4 h-4 text-green-500" />
-                                                )}
-                                                {tx.type}
-                                            </span>
-                                        </td>
-
-                                        {/* From */}
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <span className="flex items-center gap-2">
-                                                <Wallet className="w-4 h-4 text-gray-400" />
-                                                {tx.from || "N/A"}
-                                            </span>
-                                        </td>
-
-                                        {/* Category */}
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <span className="flex items-center gap-2">
-                                                <Tag className="w-4 h-4 text-gray-400" />
-                                                {category}
-                                            </span>
-                                        </td>
-                                        <td className="py-3 px-4 whitespace-nowrap">
-                                            <span className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() =>
-                                                        alert("Add Transaction")
-                                                    }
-                                                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
-                                                >
-                                                    <FileSliders className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        alert("Add Transaction")
-                                                    }
-                                                    className="py-2 px-4 bg-gray-800 text-white text-sm rounded-md hover:bg-gray-900 hover:text-white transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
-                                                >
-                                                    <Trash className="w-4 h-4" />
-                                                </button>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                            {expenses.map((tx: Expense) => (
+                                <Transaction
+                                    key={tx._id}
+                                    tx={tx}
+                                    setMessage={setMessage}
+                                />
+                            ))}
                         </tbody>
                     </table>
                 </div>
