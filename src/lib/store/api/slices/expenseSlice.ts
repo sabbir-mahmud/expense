@@ -1,4 +1,8 @@
-import { CategoryResponse, ExpenseResponse } from "@/types/expense";
+import {
+    AnalyticsResponse,
+    CategoryResponse,
+    ExpenseResponse,
+} from "@/types/expense";
 import { OverviewResponse } from "@/types/overview";
 import { apiSlice } from "../apiSlice";
 
@@ -48,6 +52,13 @@ const expenseSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["expense"],
         }),
+        getAnalytics: builder.query<AnalyticsResponse, void>({
+            query: () => ({
+                url: "api/v1/analytics/graphs",
+                method: "GET",
+            }),
+            providesTags: ["expense"],
+        }),
     }),
 });
 
@@ -58,4 +69,5 @@ export const {
     useCreateExpenseMutation,
     useUpdateExpenseMutation,
     useDeleteExpenseMutation,
+    useGetAnalyticsQuery,
 } = expenseSlice;

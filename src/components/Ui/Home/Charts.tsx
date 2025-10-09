@@ -1,5 +1,8 @@
 "use client";
 
+import { useGetAnalyticsQuery } from "@/lib/store/api/slices/expenseSlice";
+import { AnalyticsResponse, GraphData, PieData } from "@/types/expense";
+import { useEffect, useState } from "react";
 import {
     CartesianGrid,
     Cell,
@@ -15,35 +18,25 @@ import {
 } from "recharts";
 
 const Charts = () => {
-    // Dummy monthly data
-    const lineData = [
-        { month: "Jan", expense: 1200, earn: 2500, saving: 1300 },
-        { month: "Feb", expense: 1500, earn: 2700, saving: 1200 },
-        { month: "Mar", expense: 900, earn: 2400, saving: 1500 },
-        { month: "Apr", expense: 1700, earn: 2800, saving: 1100 },
-        { month: "May", expense: 1400, earn: 2600, saving: 1200 },
-        { month: "Jun", expense: 1800, earn: 3000, saving: 1200 },
-        { month: "Jul", expense: 1300, earn: 2600, saving: 1300 },
-        { month: "Aug", expense: 1900, earn: 3100, saving: 1200 },
-        { month: "Sep", expense: 1600, earn: 2900, saving: 1300 },
-        { month: "Oct", expense: 1500, earn: 2800, saving: 1300 },
-    ];
+    const [lineData, setLineData] = useState<GraphData[]>([]);
+    const [pieData, setPieData] = useState<PieData[]>([]);
+    const { data: analytics } = useGetAnalyticsQuery() as {
+        data: AnalyticsResponse;
+        isLoading: boolean;
+        isFetching: boolean;
+    };
 
-    // Dummy pie chart data for top 10 categories
-    const allPieData = [
-        { name: "Food", value: 400 },
-        { name: "Transport", value: 300 },
-        { name: "Shopping", value: 250 },
-        { name: "Bills", value: 200 },
-        { name: "Health", value: 180 },
-        { name: "Education", value: 160 },
-        { name: "Entertainment", value: 150 },
-        { name: "Travel", value: 130 },
-        { name: "Gadgets", value: 120 },
-        { name: "Others", value: 100 },
-    ];
+    useEffect(() => {
+        if (analytics?.data?.graph) {
+            setLineData(analytics?.data?.graph);
+        }
+    }, [analytics]);
 
-    const pieData = allPieData.slice(0, 5);
+    useEffect(() => {
+        if (analytics?.data?.pie) {
+            setPieData(analytics?.data?.pie);
+        }
+    }, [analytics]);
 
     const COLORS = ["#22c55e", "#3b82f6", "#ef4444", "#f59e0b", "#8b5cf6"];
 
@@ -99,7 +92,11 @@ const Charts = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={pieData}
+                                    data={
+                                        pieData as unknown as {
+                                            [key: string]: number;
+                                        }[]
+                                    }
                                     dataKey="value"
                                     nameKey="name"
                                     outerRadius={80}

@@ -34,3 +34,21 @@ export interface ExpenseResponse {
         pagination: { currentPage: number; totalPages: number };
     };
 }
+
+export interface GraphData {
+    expense: number;
+    earn: number;
+    saving: number;
+    month: string;
+}
+
+export interface PieData {
+    name: string;
+    value: number;
+}
+
+export interface AnalyticsResponse {
+    success: boolean;
+    message: string;
+    data: { graph: GraphData[]; pie: PieData[] };
+}
