@@ -10,7 +10,15 @@ const authSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["auth"],
         }),
+        register: builder.mutation({
+            query: (data) => ({
+                url: "api/v1/auth/register",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["auth"],
+        }),
     }),
 });
 
-export const { useLoginMutation } = authSlice;
+export const { useLoginMutation, useRegisterMutation } = authSlice;

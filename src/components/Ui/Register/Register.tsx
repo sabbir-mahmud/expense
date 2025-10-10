@@ -1,7 +1,11 @@
 "use client";
 
+import { useRegisterMutation } from "@/lib/store/api/slices/authSlice";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { userLogin } from "@/lib/store/slices/auth/tokenSlice";
 import { Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const Register = () => {
@@ -11,24 +15,36 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [message, setMessage] = useState({ type: "", message: "" });
+    const dispatch = useAppDispatch();
+    const router = useRouter();
 
-    const handleRegister = (e: React.FormEvent) => {
+    const [register, { isLoading }] = useRegisterMutation();
+
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             alert("Passwords do not match!");
             return;
         }
-        console.log({ name, email, password });
-        // TODO: Add register API call here
+        const res = await register({ name, email, password });
+        if (res?.data) {
+            setMessage({ type: "success", message: "Login successful" });
+            const token = res?.data?.data?.token;
+            dispatch(userLogin(token));
+            router.push("/");
+        } else {
+            setMessage({
+                type: "error",
+                message: "Login failed! Check your credentials",
+            });
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
             <div className="max-w-md w-full bg-white shadow-2xl rounded-xl p-10 space-y-6 relative overflow-hidden">
-                {/* Background subtle illustration */}
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('/background-pattern.svg')] bg-cover bg-center opacity-10 pointer-events-none"></div>
-
-                {/* Header */}
+                <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center opacity-10 pointer-events-none"></div>
                 <h1 className="text-4xl font-bold text-gray-800 text-center z-10 relative">
                     Create Account
                 </h1>
@@ -36,12 +52,22 @@ const Register = () => {
                     Start managing your expenses today
                 </p>
 
-                {/* Form */}
+                {message.message && (
+                    <p
+                        className={`${
+                            message.type === "success"
+                                ? "text-green-500"
+                                : "text-red-500"
+                        } text-center z-10 relative`}
+                    >
+                        {message.message}
+                    </p>
+                )}
+
                 <form
                     onSubmit={handleRegister}
                     className="space-y-5 z-10 relative"
                 >
-                    {/* Name Input */}
                     <div className="relative">
                         <User
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -57,7 +83,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Email Input */}
                     <div className="relative">
                         <Mail
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -73,7 +98,6 @@ const Register = () => {
                         />
                     </div>
 
-                    {/* Password Input */}
                     <div className="relative">
                         <Lock
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -100,7 +124,6 @@ const Register = () => {
                         </button>
                     </div>
 
-                    {/* Confirm Password Input */}
                     <div className="relative">
                         <Lock
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -127,16 +150,15 @@ const Register = () => {
                         </button>
                     </div>
 
-                    {/* Register Button */}
                     <button
                         type="submit"
-                        className="w-full bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition font-medium"
+                        disabled={isLoading}
+                        className="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition font-medium hover:cursor-pointer"
                     >
-                        Register
+                        {isLoading ? "Registering..." : "Register"}
                     </button>
                 </form>
 
-                {/* Login Link */}
                 <div className="text-center text-gray-500 text-sm z-10 relative">
                     Already have an account?{" "}
                     <Link
